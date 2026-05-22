@@ -20,11 +20,23 @@ export const Route = createFileRoute("/api/public/sensor")({
       OPTIONS: async () => new Response(null, { status: 204, headers: corsHeaders }),
 
       POST: async ({ request }) => {
-        const expected = process.env.DEVICE_TOKEN;
-        if (!expected) return json({ error: "Server not configured" }, 500);
-
         const token = request.headers.get("x-device-token");
-        if (!token || token !== expected) {
+        if (!token) {
+          return json({ error: "Unauthorized" }, 401);
+        }
+
+        const { data: device, error: deviceError } = await supabaseAdmin
+          .from("devices")
+          .select("id")
+          .eq("device_token", token)
+          .maybeSingle();
+
+        if (deviceError) {
+          console.error("Device lookup failed", deviceError);
+          return json({ error: "Database error" }, 500);
+        }
+
+        if (!device) {
           return json({ error: "Unauthorized" }, 401);
         }
 
@@ -51,7 +63,7 @@ export const Route = createFileRoute("/api/public/sensor")({
 
         const { error } = await supabaseAdmin
           .from("sensor_readings")
-          .insert({ temperature, humidity });
+          .insert({ device_id: device.id, temperature, humidity });
 
         if (error) {
           console.error("Insert failed", error);

@@ -14,26 +14,61 @@ export type Database = {
   }
   public: {
     Tables: {
+      devices: {
+        Row: {
+          created_at: string
+          device_token: string
+          id: string
+          name: string
+          owner_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_token: string
+          id?: string
+          name?: string
+          owner_id: string
+        }
+        Update: {
+          created_at?: string
+          device_token?: string
+          id?: string
+          name?: string
+          owner_id?: string
+        }
+        Relationships: []
+      }
       sensor_readings: {
         Row: {
+          device_id: string | null
           humidity: number
           id: number
           recorded_at: string
           temperature: number
         }
         Insert: {
+          device_id?: string | null
           humidity: number
           id?: number
           recorded_at?: string
           temperature: number
         }
         Update: {
+          device_id?: string | null
           humidity?: number
           id?: number
           recorded_at?: string
           temperature?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sensor_readings_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "devices"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

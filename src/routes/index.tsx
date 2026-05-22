@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
 import {
   Area,
   AreaChart,
@@ -11,7 +12,10 @@ import {
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Thermometer, Droplets, Activity, Mail, Phone, MapPin, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Thermometer, Droplets, Activity, Mail, Phone, MapPin, Users, Plus, Copy, Wifi } from "lucide-react";
 import mpdLogo from "@/assets/mpd-logo.png";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SiteMenu } from "@/components/SiteMenu";
@@ -22,9 +26,16 @@ export const Route = createFileRoute("/")({
 
 type Reading = {
   id: number;
+  device_id: string | null;
   temperature: number;
   humidity: number;
   recorded_at: string;
+};
+
+type Device = {
+  id: string;
+  name: string;
+  device_token: string;
 };
 
 function formatTime(iso: string) {
@@ -43,15 +54,51 @@ function formatRelative(iso: string) {
 }
 
 function Dashboard() {
+  const [session, setSession] = useState<Session | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+  const [devices, setDevices] = useState<Device[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState("");
   const [readings, setReadings] = useState<Reading[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const load = async () => {
+  const loadDevices = async (activeSession: Session | null) => {
+    if (!activeSession) {
+      setDevices([]);
+      setSelectedDeviceId("");
+      setAuthReady(true);
+      setLoading(false);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("devices")
+      .select("id, name, device_token")
+      .order("created_at", { ascending: true });
+
+    if (!error && data) {
+      setDevices(data);
+      setSelectedDeviceId((current) => current || data[0]?.id || "");
+    }
+
+    setAuthReady(true);
+  };
+
+  const load = async (deviceId = selectedDeviceId) => {
+    if (!deviceId) {
+      setReadings([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const { data, error } = await supabase
       .from("sensor_readings")
-      .select("id, temperature, humidity, recorded_at")
+      .select("id, device_id, temperature, humidity, recorded_at")
+      .eq("device_id", deviceId)
+      .gte("recorded_at", since)
       .order("recorded_at", { ascending: false })
-      .limit(288); // 24h bei 5min-Intervall
+      .limit(288);
     if (!error && data) {
       setReadings(data.map((d) => ({ ...d, temperature: Number(d.temperature), humidity: Number(d.humidity) })));
     }
@@ -59,12 +106,27 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    load();
-    const interval = setInterval(load, 30_000);
-    return () => clearInterval(interval);
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      loadDevices(data.session);
+    });
+
+    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+      loadDevices(nextSession);
+    });
+
+    return () => data.subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    load(selectedDeviceId);
+    const interval = setInterval(() => load(selectedDeviceId), 30_000);
+    return () => clearInterval(interval);
+  }, [selectedDeviceId]);
+
   const latest = readings[0];
+  const selectedDevice = devices.find((device) => device.id === selectedDeviceId);
   const chartData = [...readings]
     .reverse()
     .map((r) => ({
@@ -106,6 +168,59 @@ function Dashboard() {
             </div>
           </div>
         </header>
+
+        {!authReady ? (
+          <Card className="mb-10 border-border/60 p-6" style={{ boxShadow: "var(--shadow-card)" }}>
+            <p className="text-sm text-muted-foreground">Konto wird geprueft...</p>
+          </Card>
+        ) : !session ? (
+          <Card className="mb-10 border-border/60 p-6 md:p-8" style={{ boxShadow: "var(--shadow-card)" }}>
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 className="text-xl font-semibold tracking-tight">Bitte anmelden</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Deine Sensordaten sind geraetebezogen und nur fuer dein Konto sichtbar.
+                </p>
+              </div>
+              <Button asChild>
+                <Link to="/auth">Anmelden</Link>
+              </Button>
+            </div>
+          </Card>
+        ) : devices.length === 0 ? (
+          <AddDevicePanel userId={session.user.id} onCreated={() => loadDevices(session)} />
+        ) : (
+          <Card className="mb-10 border-border/60 p-5" style={{ boxShadow: "var(--shadow-card)" }}>
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-sm font-medium text-primary">
+                  <Wifi className="h-4 w-4" />
+                  Aktives Geraet
+                </div>
+                <h2 className="mt-1 text-xl font-semibold tracking-tight">
+                  {selectedDevice?.name ?? "Schimmeldetektor"}
+                </h2>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Tagesdiagramm der letzten 24 Stunden
+                </p>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-[minmax(180px,1fr)_auto]">
+                <select
+                  value={selectedDeviceId}
+                  onChange={(event) => setSelectedDeviceId(event.target.value)}
+                  className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground"
+                >
+                  {devices.map((device) => (
+                    <option key={device.id} value={device.id}>
+                      {device.name}
+                    </option>
+                  ))}
+                </select>
+                <AddDevicePanel userId={session.user.id} onCreated={() => loadDevices(session)} compact />
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Current values */}
         <section className="mb-10 grid gap-6 md:grid-cols-2">
@@ -276,6 +391,135 @@ function Dashboard() {
         </footer>
       </div>
     </main>
+  );
+}
+
+function createDeviceToken() {
+  const bytes = new Uint8Array(24);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function AddDevicePanel({
+  userId,
+  onCreated,
+  compact = false,
+}: {
+  userId: string;
+  onCreated: () => Promise<void> | void;
+  compact?: boolean;
+}) {
+  const [open, setOpen] = useState(!compact);
+  const [name, setName] = useState("Schimmeldetektor");
+  const [token, setToken] = useState(createDeviceToken);
+  const [lastToken, setLastToken] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const createDevice = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitting(true);
+    setError(null);
+
+    const { error: insertError } = await supabase.from("devices").insert({
+      owner_id: userId,
+      name: name.trim() || "Schimmeldetektor",
+      device_token: token,
+    });
+
+    setSubmitting(false);
+
+    if (insertError) {
+      setError(insertError.message);
+      return;
+    }
+
+    setLastToken(token);
+    setName("Schimmeldetektor");
+    setToken(createDeviceToken());
+    await onCreated();
+  };
+
+  const copyToken = async () => {
+    if (lastToken) await navigator.clipboard.writeText(lastToken);
+  };
+
+  if (compact && !open) {
+    return (
+      <Button variant="outline" onClick={() => setOpen(true)}>
+        <Plus className="h-4 w-4" />
+        Geraet
+      </Button>
+    );
+  }
+
+  return (
+    <Card className={compact ? "border-border/60 p-4" : "mb-10 border-border/60 p-6 md:p-8"} style={{ boxShadow: "var(--shadow-card)" }}>
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-semibold tracking-tight">Geraet anlegen</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Erstelle einen Zugangstoken fuer deinen Arduino Nano ESP32 mit DHT22.
+          </p>
+        </div>
+        {compact && (
+          <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)}>
+            Schliessen
+          </Button>
+        )}
+      </div>
+
+      <form className="space-y-4" onSubmit={createDevice}>
+        <div className="space-y-2">
+          <Label htmlFor={compact ? "compact-device-name" : "device-name"}>Geraetename</Label>
+          <Input
+            id={compact ? "compact-device-name" : "device-name"}
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor={compact ? "compact-device-token" : "device-token"}>Device Token</Label>
+          <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+            <Input
+              id={compact ? "compact-device-token" : "device-token"}
+              value={token}
+              onChange={(event) => setToken(event.target.value)}
+              required
+              minLength={16}
+            />
+            <Button type="button" variant="outline" onClick={() => setToken(createDeviceToken())}>
+              Neu
+            </Button>
+          </div>
+        </div>
+
+        {error && (
+          <div className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive-foreground">
+            {error}
+          </div>
+        )}
+
+        {lastToken && (
+          <div className="rounded-md border border-primary/40 bg-primary/10 p-3 text-sm">
+            <div className="font-medium text-foreground">Token fuer Arduino speichern:</div>
+            <code className="mt-2 block break-all rounded bg-background p-2 text-xs text-foreground">
+              {lastToken}
+            </code>
+            <Button type="button" variant="outline" size="sm" className="mt-3" onClick={copyToken}>
+              <Copy className="h-4 w-4" />
+              Kopieren
+            </Button>
+          </div>
+        )}
+
+        <Button type="submit" disabled={submitting}>
+          <Plus className="h-4 w-4" />
+          {submitting ? "Wird erstellt..." : "Geraet erstellen"}
+        </Button>
+      </form>
+    </Card>
   );
 }
 
