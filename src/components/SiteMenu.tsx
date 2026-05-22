@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, Home, Building2, Target, Users } from "lucide-react";
+import { Menu, Home, Building2, Target, Users, LogIn } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import mpdLogo from "@/assets/mpd-logo.png";
 import mpdDevice from "@/assets/mpd-one-device.png";
@@ -15,7 +15,10 @@ type Item = {
 const sections: { label: string; items: Item[] }[] = [
   {
     label: "Start",
-    items: [{ to: "/", label: "Dashboard", icon: Home }],
+    items: [
+      { to: "/", label: "Dashboard", icon: Home },
+      { to: "/auth", label: "Anmelden", icon: LogIn },
+    ],
   },
   {
     label: "Produkt",
