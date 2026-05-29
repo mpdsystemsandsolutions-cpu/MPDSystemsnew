@@ -15,7 +15,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Thermometer, Droplets, Activity, Mail, Phone, MapPin, Users, Plus, Copy, Wifi } from "lucide-react";
+import { Thermometer, Droplets, Mail, Phone, MapPin, Users, Plus, Copy, Wifi } from "lucide-react";
 import mpdLogo from "@/assets/mpd-logo.png";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SiteMenu } from "@/components/SiteMenu";
@@ -61,10 +61,36 @@ function Dashboard() {
   const [readings, setReadings] = useState<Reading[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const applyReadings = (data: Reading[]) => {
+    setReadings(
+      data.map((d) => ({
+        ...d,
+        temperature: Number(d.temperature),
+        humidity: Number(d.humidity),
+      })),
+    );
+  };
+
+  const loadPublicReadings = async (deviceId?: string) => {
+    const params = deviceId ? `?device_id=${encodeURIComponent(deviceId)}` : "";
+    const response = await fetch(`/api/public/latest${params}`);
+
+    if (!response.ok) {
+      setReadings([]);
+      return 0;
+    }
+
+    const data = (await response.json()) as { readings?: Reading[] };
+    const nextReadings = data.readings ?? [];
+    applyReadings(nextReadings);
+    return nextReadings.length;
+  };
+
   const loadDevices = async (activeSession: Session | null) => {
     if (!activeSession) {
       setDevices([]);
       setSelectedDeviceId("");
+      await loadPublicReadings();
       setAuthReady(true);
       setLoading(false);
       return;
@@ -85,7 +111,7 @@ function Dashboard() {
 
   const load = async (deviceId = selectedDeviceId) => {
     if (!deviceId) {
-      setReadings([]);
+      await loadPublicReadings();
       setLoading(false);
       return;
     }
@@ -99,8 +125,13 @@ function Dashboard() {
       .gte("recorded_at", since)
       .order("recorded_at", { ascending: false })
       .limit(288);
-    if (!error && data) {
-      setReadings(data.map((d) => ({ ...d, temperature: Number(d.temperature), humidity: Number(d.humidity) })));
+    if (!error && data && data.length > 0) {
+      applyReadings(data);
+    } else {
+      const publicReadingCount = await loadPublicReadings(deviceId);
+      if (publicReadingCount === 0) {
+        await loadPublicReadings();
+      }
     }
     setLoading(false);
   };
@@ -126,14 +157,15 @@ function Dashboard() {
   }, [selectedDeviceId]);
 
   const latest = readings[0];
+  const hasReadings = readings.length > 0;
+  const displayedTemperature = latest ? latest.temperature.toFixed(1) : "-";
+  const displayedHumidity = latest ? latest.humidity.toFixed(1) : "-";
   const selectedDevice = devices.find((device) => device.id === selectedDeviceId);
-  const chartData = [...readings]
-    .reverse()
-    .map((r) => ({
-      time: formatTime(r.recorded_at),
-      temperature: r.temperature,
-      humidity: r.humidity,
-    }));
+  const chartData = [...readings].reverse().map((r) => ({
+    time: formatTime(r.recorded_at),
+    temperature: r.temperature,
+    humidity: r.humidity,
+  }));
 
   return (
     <main className="min-h-screen bg-background">
@@ -174,7 +206,10 @@ function Dashboard() {
             <p className="text-sm text-muted-foreground">Konto wird geprueft...</p>
           </Card>
         ) : !session ? (
-          <Card className="mb-10 border-border/60 p-6 md:p-8" style={{ boxShadow: "var(--shadow-card)" }}>
+          <Card
+            className="mb-10 border-border/60 p-6 md:p-8"
+            style={{ boxShadow: "var(--shadow-card)" }}
+          >
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <h2 className="text-xl font-semibold tracking-tight">Bitte anmelden</h2>
@@ -216,7 +251,11 @@ function Dashboard() {
                     </option>
                   ))}
                 </select>
-                <AddDevicePanel userId={session.user.id} onCreated={() => loadDevices(session)} compact />
+                <AddDevicePanel
+                  userId={session.user.id}
+                  onCreated={() => loadDevices(session)}
+                  compact
+                />
               </div>
             </div>
           </Card>
@@ -227,16 +266,14 @@ function Dashboard() {
           <MetricCard
             icon={<Thermometer className="h-5 w-5" />}
             label="Temperatur"
-            value={latest ? latest.temperature.toFixed(1) : "—"}
+            value={displayedTemperature}
             unit="°C"
-            loading={loading}
           />
           <MetricCard
             icon={<Droplets className="h-5 w-5" />}
             label="Luftfeuchtigkeit"
-            value={latest ? latest.humidity.toFixed(1) : "—"}
+            value={displayedHumidity}
             unit="%"
-            loading={loading}
           />
         </section>
 
@@ -249,7 +286,7 @@ function Dashboard() {
             <div>
               <h2 className="text-lg font-semibold tracking-tight">Verlauf</h2>
               <p className="text-sm text-muted-foreground">
-                Letzte {readings.length} Messungen
+                {hasReadings ? `Letzte ${readings.length} Messungen` : "Keine echten Messwerte"}
               </p>
             </div>
             <div className="flex gap-4 text-xs">
@@ -258,9 +295,7 @@ function Dashboard() {
             </div>
           </div>
 
-          {readings.length === 0 ? (
-            <EmptyState loading={loading} />
-          ) : (
+          {hasReadings ? (
             <div className="h-[340px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
@@ -316,6 +351,8 @@ function Dashboard() {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
+          ) : (
+            <EmptyState loading={loading} />
           )}
         </Card>
 
@@ -332,16 +369,18 @@ function Dashboard() {
               <div className="flex items-center gap-3">
                 <img src={mpdLogo} alt="MPD Logo" className="h-12 w-auto" />
                 <div className="text-sm font-semibold text-foreground leading-tight">
-                  MPD Systems<br />and Solutions
+                  MPD Systems
+                  <br />
+                  and Solutions
                 </div>
               </div>
               <p className="mt-3 text-xs italic text-primary">
                 Schimmel erkennen, bevor er entsteht
               </p>
               <p className="mt-3 text-sm text-muted-foreground">
-                Gegründet 2025. Wir produzieren Schimmelpräventionsgeräte
-                für private Haushalte und Geschäftskunden – mit smarter
-                Sensorik, die Risiken erkennt, bevor Schimmel entsteht.
+                Gegründet 2025. Wir produzieren Schimmelpräventionsgeräte für private Haushalte und
+                Geschäftskunden – mit smarter Sensorik, die Risiken erkennt, bevor Schimmel
+                entsteht.
               </p>
             </div>
 
@@ -454,7 +493,10 @@ function AddDevicePanel({
   }
 
   return (
-    <Card className={compact ? "border-border/60 p-4" : "mb-10 border-border/60 p-6 md:p-8"} style={{ boxShadow: "var(--shadow-card)" }}>
+    <Card
+      className={compact ? "border-border/60 p-4" : "mb-10 border-border/60 p-6 md:p-8"}
+      style={{ boxShadow: "var(--shadow-card)" }}
+    >
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <h2 className="text-xl font-semibold tracking-tight">Geraet anlegen</h2>
@@ -523,18 +565,28 @@ function AddDevicePanel({
   );
 }
 
+function EmptyState({ loading }: { loading: boolean }) {
+  return (
+    <div className="flex h-[340px] items-center justify-center rounded-lg border border-dashed border-border bg-muted/20 px-6 text-center">
+      <p className="text-sm text-muted-foreground">
+        {loading
+          ? "Messwerte werden geladen..."
+          : "Noch keine echten Messwerte empfangen. Pruefe API_URL, Device Token und Vercel-Umgebungsvariablen."}
+      </p>
+    </div>
+  );
+}
+
 function MetricCard({
   icon,
   label,
   value,
   unit,
-  loading,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   unit: string;
-  loading: boolean;
 }) {
   return (
     <Card
@@ -548,9 +600,7 @@ function MetricCard({
         </div>
       </div>
       <div className="mt-6 flex items-baseline gap-2">
-        <span className="text-5xl font-semibold tracking-tight tabular-nums">
-          {loading ? "—" : value}
-        </span>
+        <span className="text-5xl font-semibold tracking-tight tabular-nums">{value}</span>
         <span className="text-lg font-medium text-muted-foreground">{unit}</span>
       </div>
       <div
@@ -567,23 +617,5 @@ function LegendDot({ color, label }: { color: string; label: string }) {
       <span className="h-2 w-2 rounded-full" style={{ background: color }} />
       {label}
     </span>
-  );
-}
-
-function EmptyState({ loading }: { loading: boolean }) {
-  return (
-    <div className="flex h-[340px] flex-col items-center justify-center gap-2 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent">
-        <Activity className="h-5 w-5 text-accent-foreground" />
-      </div>
-      <p className="text-sm font-medium text-foreground">
-        {loading ? "Lade Daten…" : "Noch keine Messungen"}
-      </p>
-      {!loading && (
-        <p className="max-w-xs text-xs text-muted-foreground">
-          Sobald dein ESP32 die erste Messung sendet, erscheint sie hier.
-        </p>
-      )}
-    </div>
   );
 }

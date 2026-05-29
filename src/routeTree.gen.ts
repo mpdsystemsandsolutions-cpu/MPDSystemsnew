@@ -16,7 +16,9 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UnternehmenIndexRouteImport } from './routes/unternehmen.index'
 import { Route as UnternehmenTeamRouteImport } from './routes/unternehmen.team'
+import { Route as ApiIngestRouteImport } from './routes/api/ingest'
 import { Route as ApiPublicSensorRouteImport } from './routes/api/public/sensor'
+import { Route as ApiPublicLatestRouteImport } from './routes/api/public/latest'
 
 const UnternehmenRoute = UnternehmenRouteImport.update({
   id: '/unternehmen',
@@ -53,9 +55,19 @@ const UnternehmenTeamRoute = UnternehmenTeamRouteImport.update({
   path: '/team',
   getParentRoute: () => UnternehmenRoute,
 } as any)
+const ApiIngestRoute = ApiIngestRouteImport.update({
+  id: '/api/ingest',
+  path: '/api/ingest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSensorRoute = ApiPublicSensorRouteImport.update({
   id: '/api/public/sensor',
   path: '/api/public/sensor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicLatestRoute = ApiPublicLatestRouteImport.update({
+  id: '/api/public/latest',
+  path: '/api/public/latest',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -65,8 +77,10 @@ export interface FileRoutesByFullPath {
   '/markt': typeof MarktRoute
   '/produkt': typeof ProduktRoute
   '/unternehmen': typeof UnternehmenRouteWithChildren
+  '/api/ingest': typeof ApiIngestRoute
   '/unternehmen/team': typeof UnternehmenTeamRoute
   '/unternehmen/': typeof UnternehmenIndexRoute
+  '/api/public/latest': typeof ApiPublicLatestRoute
   '/api/public/sensor': typeof ApiPublicSensorRoute
 }
 export interface FileRoutesByTo {
@@ -74,8 +88,10 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/markt': typeof MarktRoute
   '/produkt': typeof ProduktRoute
+  '/api/ingest': typeof ApiIngestRoute
   '/unternehmen/team': typeof UnternehmenTeamRoute
   '/unternehmen': typeof UnternehmenIndexRoute
+  '/api/public/latest': typeof ApiPublicLatestRoute
   '/api/public/sensor': typeof ApiPublicSensorRoute
 }
 export interface FileRoutesById {
@@ -85,8 +101,10 @@ export interface FileRoutesById {
   '/markt': typeof MarktRoute
   '/produkt': typeof ProduktRoute
   '/unternehmen': typeof UnternehmenRouteWithChildren
+  '/api/ingest': typeof ApiIngestRoute
   '/unternehmen/team': typeof UnternehmenTeamRoute
   '/unternehmen/': typeof UnternehmenIndexRoute
+  '/api/public/latest': typeof ApiPublicLatestRoute
   '/api/public/sensor': typeof ApiPublicSensorRoute
 }
 export interface FileRouteTypes {
@@ -97,8 +115,10 @@ export interface FileRouteTypes {
     | '/markt'
     | '/produkt'
     | '/unternehmen'
+    | '/api/ingest'
     | '/unternehmen/team'
     | '/unternehmen/'
+    | '/api/public/latest'
     | '/api/public/sensor'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -106,8 +126,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/markt'
     | '/produkt'
+    | '/api/ingest'
     | '/unternehmen/team'
     | '/unternehmen'
+    | '/api/public/latest'
     | '/api/public/sensor'
   id:
     | '__root__'
@@ -116,8 +138,10 @@ export interface FileRouteTypes {
     | '/markt'
     | '/produkt'
     | '/unternehmen'
+    | '/api/ingest'
     | '/unternehmen/team'
     | '/unternehmen/'
+    | '/api/public/latest'
     | '/api/public/sensor'
   fileRoutesById: FileRoutesById
 }
@@ -127,6 +151,8 @@ export interface RootRouteChildren {
   MarktRoute: typeof MarktRoute
   ProduktRoute: typeof ProduktRoute
   UnternehmenRoute: typeof UnternehmenRouteWithChildren
+  ApiIngestRoute: typeof ApiIngestRoute
+  ApiPublicLatestRoute: typeof ApiPublicLatestRoute
   ApiPublicSensorRoute: typeof ApiPublicSensorRoute
 }
 
@@ -181,11 +207,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnternehmenTeamRouteImport
       parentRoute: typeof UnternehmenRoute
     }
+    '/api/ingest': {
+      id: '/api/ingest'
+      path: '/api/ingest'
+      fullPath: '/api/ingest'
+      preLoaderRoute: typeof ApiIngestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/sensor': {
       id: '/api/public/sensor'
       path: '/api/public/sensor'
       fullPath: '/api/public/sensor'
       preLoaderRoute: typeof ApiPublicSensorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/latest': {
+      id: '/api/public/latest'
+      path: '/api/public/latest'
+      fullPath: '/api/public/latest'
+      preLoaderRoute: typeof ApiPublicLatestRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -211,6 +251,8 @@ const rootRouteChildren: RootRouteChildren = {
   MarktRoute: MarktRoute,
   ProduktRoute: ProduktRoute,
   UnternehmenRoute: UnternehmenRouteWithChildren,
+  ApiIngestRoute: ApiIngestRoute,
+  ApiPublicLatestRoute: ApiPublicLatestRoute,
   ApiPublicSensorRoute: ApiPublicSensorRoute,
 }
 export const routeTree = rootRouteImport
