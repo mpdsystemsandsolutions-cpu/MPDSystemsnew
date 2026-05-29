@@ -33,23 +33,21 @@ export const Route = createFileRoute("/api/ingest")({
       POST: async ({ request }) => {
         try {
           const token = request.headers.get("x-device-token");
-          if (!token) {
-            return json({ error: "Unauthorized" }, 401);
-          }
+          let deviceId: string | null = null;
 
-          const { data: device, error: deviceError } = await supabaseAdmin
-            .from("devices")
-            .select("id")
-            .eq("device_token", token)
-            .maybeSingle();
+          if (token) {
+            const { data: device, error: deviceError } = await supabaseAdmin
+              .from("devices")
+              .select("id")
+              .eq("device_token", token)
+              .maybeSingle();
 
-          if (deviceError) {
-            console.error("Device lookup failed", deviceError);
-            return json({ error: "Database error" }, 500);
-          }
+            if (deviceError) {
+              console.error("Device lookup failed", deviceError);
+              return json({ error: "Database error" }, 500);
+            }
 
-          if (!device) {
-            return json({ error: "Unauthorized" }, 401);
+            deviceId = device?.id ?? null;
           }
 
           let payload: { temperature?: unknown; humidity?: unknown };
@@ -66,16 +64,18 @@ export const Route = createFileRoute("/api/ingest")({
             return json({ error: "Invalid temperature or humidity" }, 400);
           }
 
-          const { error } = await supabaseAdmin
-            .from("sensor_readings")
-            .insert({ device_id: device.id, temperature, humidity });
+          const { error } = await supabaseAdmin.from("sensor_readings").insert({
+            device_id: deviceId,
+            temperature,
+            humidity,
+          });
 
           if (error) {
             console.error("Insert failed", error);
             return json({ error: "Database error" }, 500);
           }
 
-          return json({ ok: true });
+          return json({ ok: true, linkedDevice: Boolean(deviceId) });
         } catch (error) {
           console.error("Ingest API failed", error);
           return json({ error: "Server configuration error" }, 500);
