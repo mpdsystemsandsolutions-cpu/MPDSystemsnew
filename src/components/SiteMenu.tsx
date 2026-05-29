@@ -22,7 +22,10 @@ const sections: { label: string; items: Item[] }[] = [
   },
   {
     label: "Produkt",
-    items: [{ to: "/produkt", label: "MPD ONE", image: mpdDevice }],
+    items: [
+      { to: "/produkt", label: "MPD ONE", image: mpdDevice },
+      { to: "/produkt-two", label: "MPD TWO", image: mpdDevice },
+    ],
   },
   {
     label: "Unternehmen",
