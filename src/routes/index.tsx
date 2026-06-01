@@ -134,10 +134,44 @@ function getRiskCopy(level: RiskLevel) {
 }
 
 function getVentilationAdvice(temperature: number, humidity: number) {
-  if (humidity >= 70) return "Jetzt lüften und Feuchtigkeitsquellen prüfen.";
-  if (humidity >= 60) return "Stoßlüften empfohlen, damit die Feuchtigkeit sinkt.";
-  if (temperature < 16 && humidity > 55) return "Raum leicht erwärmen und kurz lüften.";
-  return "Raumklima stabil. Aktuell kein Handeln nötig.";
+  if (temperature < 16 && humidity > 55 && humidity < 60) {
+    return "Ampel Grün: alles in Ordnung. Raum bei Gelegenheit leicht erwärmen.";
+  }
+
+  return getTrafficLightRecommendation(humidity).recommendation;
+}
+
+function getTrafficLightRecommendation(humidity: number) {
+  if (humidity >= 70) {
+    return {
+      light: "Ampel Rot",
+      severity: "Kritisch",
+      recommendation: "Dringend lüften.",
+      tone: "text-red-300",
+      border: "border-red-400/40",
+      bg: "bg-red-500/10",
+    };
+  }
+
+  if (humidity >= 60) {
+    return {
+      light: "Ampel Orange",
+      severity: "Achtung",
+      recommendation: "Bitte lüften.",
+      tone: "text-amber-300",
+      border: "border-amber-400/40",
+      bg: "bg-amber-500/10",
+    };
+  }
+
+  return {
+    light: "Ampel Grün",
+    severity: "In Ordnung",
+    recommendation: "Alles in Ordnung.",
+    tone: "text-primary",
+    border: "border-primary/40",
+    bg: "bg-primary/10",
+  };
 }
 
 function getDailyStats(source: Reading[]) {
@@ -166,16 +200,21 @@ function getDailyStats(source: Reading[]) {
 
 function getWarningHistory(source: Reading[]) {
   return source
-    .filter((reading) => reading.humidity >= 60)
     .slice(0, 5)
-    .map((reading) => ({
-      time: formatTime(reading.recorded_at),
-      severity: reading.humidity >= 70 ? "Kritisch" : "Achtung",
-      text:
-        reading.humidity >= 70
-          ? `Luftfeuchtigkeit kritisch: ${reading.humidity.toFixed(1)} %`
-          : `Lüften empfohlen: ${reading.humidity.toFixed(1)} %`,
-    }));
+    .map((reading) => {
+      const action = getTrafficLightRecommendation(reading.humidity);
+
+      return {
+        time: formatTime(reading.recorded_at),
+        severity: action.severity,
+        light: action.light,
+        recommendation: action.recommendation,
+        tone: action.tone,
+        border: action.border,
+        bg: action.bg,
+        text: `Luftfeuchtigkeit: ${reading.humidity.toFixed(1)} %`,
+      };
+    });
 }
 
 function Dashboard() {
@@ -787,7 +826,16 @@ function WarningHistory({
   items,
   isDemo,
 }: {
-  items: Array<{ time: string; severity: string; text: string }>;
+  items: Array<{
+    time: string;
+    severity: string;
+    light: string;
+    recommendation: string;
+    tone: string;
+    border: string;
+    bg: string;
+    text: string;
+  }>;
   isDemo: boolean;
 }) {
   return (
@@ -799,7 +847,9 @@ function WarningHistory({
             Warnhistorie
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {isDemo ? "Beispielhafte Warnungen aus dem Demo-Verlauf" : "Auffällige Messwerte der letzten 24 Stunden"}
+            {isDemo
+              ? "Beispielhafte Ampel-Empfehlungen aus dem Demo-Verlauf"
+              : "Ampelstatus und Handlungsempfehlungen der letzten 24 Stunden"}
           </p>
         </div>
       </div>
@@ -816,7 +866,15 @@ function WarningHistory({
                 <div className="text-sm font-medium text-foreground">
                   {item.time} · {item.severity}
                 </div>
-                <div className="mt-1 text-sm text-muted-foreground">{item.text}</div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <span className={`rounded-md border px-2 py-1 text-xs font-medium ${item.border} ${item.bg} ${item.tone}`}>
+                    {item.light}
+                  </span>
+                  <span className="rounded-md border border-border bg-background px-2 py-1 text-xs text-muted-foreground">
+                    Handlungsempfehlung: {item.recommendation}
+                  </span>
+                </div>
+                <div className="mt-2 text-sm text-muted-foreground">{item.text}</div>
               </div>
             </div>
           ))}
