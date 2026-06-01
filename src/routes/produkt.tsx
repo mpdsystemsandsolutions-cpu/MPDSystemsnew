@@ -1,8 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CheckCircle2, Cpu, Home, Package, Ruler, ShieldCheck, Signal, Wind } from "lucide-react";
+import {
+  CheckCircle2,
+  Cpu,
+  Home,
+  Package,
+  PlayCircle,
+  Ruler,
+  ShieldCheck,
+  Signal,
+  Sparkles,
+  Wind,
+} from "lucide-react";
 import { PageShell, Section } from "@/components/PageShell";
 import { Card } from "@/components/ui/card";
 import mpdDevice from "@/assets/mpd-one-device.png";
+import mpdOneDemo from "@/assets/mpd-one-demo.mp4";
 
 export const Route = createFileRoute("/produkt")({
   head: () => ({
@@ -72,6 +84,45 @@ function ProduktPage() {
           </p>
         </div>
       </div>
+
+      <section className="overflow-hidden rounded-lg border border-primary/30 bg-card">
+        <div className="grid gap-0 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="relative bg-muted/20">
+            <video
+              src={mpdOneDemo}
+              controls
+              preload="metadata"
+              playsInline
+              className="aspect-video h-full w-full bg-background object-cover"
+            >
+              Dein Browser unterstützt dieses Video nicht.
+            </video>
+          </div>
+          <div className="flex flex-col justify-center p-6 md:p-8">
+            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+              <PlayCircle className="h-3.5 w-3.5" />
+              MPD ONE in Aktion
+            </div>
+            <h2 className="mt-4 text-2xl font-semibold tracking-tight md:text-3xl">
+              Vom Messwert zur klaren Entscheidung
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
+              Das Video zeigt, wie das MPD ONE Raumklima sichtbar macht: messen, bewerten und
+              direkt verstehen, ob alles passt oder ob gelüftet werden sollte.
+            </p>
+            <div className="mt-6 grid gap-3">
+              {["Live-Demo des Geräts", "Ampelstatus auf einen Blick", "Dashboard als Ergänzung"].map(
+                (item) => (
+                  <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <span>{item}</span>
+                  </div>
+                ),
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
 
       <Section title="So funktioniert's">
         <div className="grid gap-4 md:grid-cols-3">
