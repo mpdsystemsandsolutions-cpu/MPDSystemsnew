@@ -18,6 +18,7 @@ import {
   Copy,
   Droplets,
   Gauge,
+  LogIn,
   Mail,
   MapPin,
   Phone,
@@ -614,6 +615,7 @@ function Dashboard() {
           </div>
         </footer>
       </div>
+      {authReady && !session && <FloatingLoginPrompt />}
     </main>
   );
 }
@@ -755,6 +757,28 @@ function DemoNotice() {
     <div className="mb-6 rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-muted-foreground">
       <span className="font-medium text-foreground">Demo-Modus:</span> Noch keine echten Messwerte
       vorhanden. Das Dashboard zeigt Beispieldaten, damit Besucher den Produktnutzen sofort sehen.
+    </div>
+  );
+}
+
+function FloatingLoginPrompt() {
+  return (
+    <div className="fixed bottom-5 right-5 z-40 max-w-[calc(100vw-2.5rem)] rounded-lg border border-primary/40 bg-card p-3 shadow-2xl shadow-black/20">
+      <div className="flex items-center gap-3">
+        <div className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/15 text-primary sm:flex">
+          <LogIn className="h-5 w-5" />
+        </div>
+        <div className="min-w-0">
+          <div className="text-sm font-semibold text-foreground">Kundenbereich</div>
+          <div className="text-xs text-muted-foreground">Anmelden und eigene Sensordaten sehen</div>
+        </div>
+        <Button asChild size="sm" className="shrink-0">
+          <Link to="/auth">
+            <LogIn className="h-4 w-4" />
+            Anmelden
+          </Link>
+        </Button>
+      </div>
     </div>
   );
 }
