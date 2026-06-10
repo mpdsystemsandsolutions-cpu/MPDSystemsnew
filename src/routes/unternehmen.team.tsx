@@ -4,6 +4,9 @@ import tomImg from "@/assets/team-tom.jpg";
 import romanImg from "@/assets/team-roman.jpg";
 import robinImg from "@/assets/team-robin.jpg";
 import matthiasImg from "@/assets/team-matthias.jpg";
+import hansgroheLogo from "@/assets/company-hansgrohe.svg";
+import supfinaLogo from "@/assets/company-supfina.png";
+import kochLogo from "@/assets/company-koch.svg";
 
 export const Route = createFileRoute("/unternehmen/team")({
   head: () => ({
@@ -19,25 +22,29 @@ const team = [
   {
     name: "Tom Furtwängler",
     role: "Head of Product Developing",
-    employer: "hansgrohe",
+    company: "hansgrohe",
+    companyLogo: hansgroheLogo,
     image: tomImg,
   },
   {
     name: "Roman Armbruster",
     role: "Head of Product Developing",
-    employer: "hansgrohe",
+    company: "hansgrohe",
+    companyLogo: hansgroheLogo,
     image: romanImg,
   },
   {
     name: "Robin Grießbaum",
     role: "Head of Marketing & Sales",
-    employer: "supfina",
+    company: "Supfina",
+    companyLogo: supfinaLogo,
     image: robinImg,
   },
   {
     name: "Matthias Kugel",
     role: "Hardware Lead",
-    employer: "KOCH Uhlmann Group",
+    company: "KOCH Uhlmann Group",
+    companyLogo: kochLogo,
     image: matthiasImg,
   },
 ];
@@ -55,8 +62,12 @@ function TeamPage() {
               <div className="p-4">
                 <div className="text-base font-semibold text-foreground">{m.name}</div>
                 <div className="mt-1 text-sm text-primary">{m.role}</div>
-                <div className="mt-3 border-t border-border pt-3 text-sm text-muted-foreground">
-                  Arbeitgeber: <span className="font-medium text-foreground">{m.employer}</span>
+                <div className="mt-3 flex h-16 items-center border-t border-border pt-3">
+                  <img
+                    src={m.companyLogo}
+                    alt={`${m.company} Logo`}
+                    className="max-h-10 max-w-44 object-contain object-left"
+                  />
                 </div>
               </div>
             </li>
