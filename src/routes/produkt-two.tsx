@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Gauge, Lightbulb, MonitorSmartphone, Palette, Wifi } from "lucide-react";
+import { Gauge, Lightbulb, MonitorSmartphone, Palette, Sparkles, Wifi } from "lucide-react";
 import { PageShell, Section } from "@/components/PageShell";
 import { Card } from "@/components/ui/card";
 import mpdTwoRgb from "@/assets/mpd-two-rgb.png";
+import mpdTwoLed from "@/assets/mpd-two-led.png";
 import mpdTwoShowroom from "@/assets/mpd-two-showroom.png";
 
 export const Route = createFileRoute("/produkt-two")({
@@ -56,6 +57,42 @@ function ProduktTwoPage() {
               alt="Kompakte MPD TWO Version mit RGB-LED"
               className="order-1 aspect-square h-full w-full object-cover lg:order-2"
             />
+          </div>
+        </Card>
+      </Section>
+
+      <Section title="Kompakte LED-Version für schlichtes Design">
+        <Card className="overflow-hidden border-primary/30 bg-card">
+          <div className="grid lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+            <img
+              src={mpdTwoLed}
+              alt="Kompakte MPD TWO Version mit umlaufendem LED-Ring"
+              className="aspect-square h-full w-full object-cover"
+            />
+            <div className="p-6 md:p-8">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                <Sparkles className="h-3.5 w-3.5" />
+                Minimalistische LED-Anzeige
+              </div>
+              <h2 className="mt-4 text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+                Dezente Form, klares Signal
+              </h2>
+              <p className="mt-3 leading-relaxed text-muted-foreground">
+                Die kompakte LED-Version fügt sich mit ihrem schlichten, runden Gehäuse unauffällig
+                in Wohn- und Arbeitsräume ein. Der umlaufende LED-Ring zeigt den aktuellen
+                Raumklima-Status klar und aus verschiedenen Blickwinkeln sichtbar.
+              </p>
+              <div className="mt-6 grid gap-3">
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <Lightbulb className="h-4 w-4 text-primary" />
+                  Umlaufender LED-Ring für eine eindeutige Statusanzeige
+                </div>
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <MonitorSmartphone className="h-4 w-4 text-primary" />
+                  Schlichtes Design mit Zugriff auf das Live-Dashboard
+                </div>
+              </div>
+            </div>
           </div>
         </Card>
       </Section>
