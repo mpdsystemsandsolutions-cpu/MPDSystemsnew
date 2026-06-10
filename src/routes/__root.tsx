@@ -72,17 +72,29 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MPD Systems and Solutions · Klima-Dashboard" },
-      { name: "description", content: "Live Temperatur- und Luftfeuchte-Werte vom ESP32 mit DHT22-Sensor – ein Projekt von MPD Systems and Solutions." },
+      { title: "MPD Systems and Solutions | Schimmelprävention" },
+      {
+        name: "description",
+        content:
+          "MPD erkennt Schimmelrisiken frühzeitig und übersetzt Raumklimadaten in klare Handlungsempfehlungen.",
+      },
       { name: "author", content: "MPD Systems and Solutions" },
-      { property: "og:title", content: "MPD Systems and Solutions · Klima-Dashboard" },
-      { property: "og:description", content: "Live Temperatur- und Luftfeuchte-Werte vom ESP32 mit DHT22-Sensor – ein Projekt von MPD Systems and Solutions." },
+      { property: "og:title", content: "MPD Systems and Solutions | Schimmelprävention" },
+      { property: "og:description", content: "Schimmel erkennen, bevor er entsteht." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "MPD Systems and Solutions · Klima-Dashboard" },
-      { name: "twitter:description", content: "Live Temperatur- und Luftfeuchte-Werte vom ESP32 mit DHT22-Sensor – ein Projekt von MPD Systems and Solutions." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0ea95281-5f95-4743-aacb-17566edbd39e/id-preview-24aeac5d--20db926e-94a7-4f86-8dea-54d3a1b8e5a6.lovable.app-1779431804827.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0ea95281-5f95-4743-aacb-17566edbd39e/id-preview-24aeac5d--20db926e-94a7-4f86-8dea-54d3a1b8e5a6.lovable.app-1779431804827.png" },
+      { name: "twitter:title", content: "MPD Systems and Solutions | Schimmelprävention" },
+      { name: "twitter:description", content: "Schimmel erkennen, bevor er entsteht." },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0ea95281-5f95-4743-aacb-17566edbd39e/id-preview-24aeac5d--20db926e-94a7-4f86-8dea-54d3a1b8e5a6.lovable.app-1779431804827.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0ea95281-5f95-4743-aacb-17566edbd39e/id-preview-24aeac5d--20db926e-94a7-4f86-8dea-54d3a1b8e5a6.lovable.app-1779431804827.png",
+      },
     ],
     links: [
       {
@@ -99,7 +111,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="de">
       <head>
         <HeadContent />
       </head>

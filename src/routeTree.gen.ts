@@ -13,6 +13,7 @@ import { Route as UnternehmenRouteImport } from './routes/unternehmen'
 import { Route as ProduktTwoRouteImport } from './routes/produkt-two'
 import { Route as ProduktRouteImport } from './routes/produkt'
 import { Route as MarktRouteImport } from './routes/markt'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UnternehmenIndexRouteImport } from './routes/unternehmen.index'
@@ -39,6 +40,11 @@ const ProduktRoute = ProduktRouteImport.update({
 const MarktRoute = MarktRouteImport.update({
   id: '/markt',
   path: '/markt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -80,6 +86,7 @@ const ApiPublicLatestRoute = ApiPublicLatestRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
   '/markt': typeof MarktRoute
   '/produkt': typeof ProduktRoute
   '/produkt-two': typeof ProduktTwoRoute
@@ -93,6 +100,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
   '/markt': typeof MarktRoute
   '/produkt': typeof ProduktRoute
   '/produkt-two': typeof ProduktTwoRoute
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard': typeof DashboardRoute
   '/markt': typeof MarktRoute
   '/produkt': typeof ProduktRoute
   '/produkt-two': typeof ProduktTwoRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/dashboard'
     | '/markt'
     | '/produkt'
     | '/produkt-two'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/dashboard'
     | '/markt'
     | '/produkt'
     | '/produkt-two'
@@ -146,6 +157,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/auth'
+    | '/dashboard'
     | '/markt'
     | '/produkt'
     | '/produkt-two'
@@ -160,6 +172,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  DashboardRoute: typeof DashboardRoute
   MarktRoute: typeof MarktRoute
   ProduktRoute: typeof ProduktRoute
   ProduktTwoRoute: typeof ProduktTwoRoute
@@ -197,6 +210,13 @@ declare module '@tanstack/react-router' {
       path: '/markt'
       fullPath: '/markt'
       preLoaderRoute: typeof MarktRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -268,6 +288,7 @@ const UnternehmenRouteWithChildren = UnternehmenRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  DashboardRoute: DashboardRoute,
   MarktRoute: MarktRoute,
   ProduktRoute: ProduktRoute,
   ProduktTwoRoute: ProduktTwoRoute,

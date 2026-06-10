@@ -10,9 +10,11 @@ import {
   Signal,
   Sparkles,
   Wind,
+  Mail,
 } from "lucide-react";
 import { PageShell, Section } from "@/components/PageShell";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import mpdDevice from "@/assets/mpd-one-device.png";
 import mpdOneDemo from "@/assets/mpd-one-demo.mp4";
 
@@ -78,9 +80,9 @@ function ProduktPage() {
             Klare Warnung statt Zahlenraten
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
-            Das MPD ONE misst kontinuierlich die Raumluft und übersetzt die Werte in eine
-            einfache Handlungsempfehlung. Nutzer sehen nicht nur Prozentwerte, sondern direkt,
-            ob das Raumklima stabil ist oder ob Lüften empfohlen wird.
+            Das MPD ONE misst kontinuierlich die Raumluft und übersetzt die Werte in eine einfache
+            Handlungsempfehlung. Nutzer sehen nicht nur Prozentwerte, sondern direkt, ob das
+            Raumklima stabil ist oder ob Lüften empfohlen wird.
           </p>
         </div>
       </div>
@@ -107,18 +109,20 @@ function ProduktPage() {
               Vom Messwert zur klaren Entscheidung
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
-              Das Video zeigt, wie das MPD ONE Raumklima sichtbar macht: messen, bewerten und
-              direkt verstehen, ob alles passt oder ob gelüftet werden sollte.
+              Das Video zeigt, wie das MPD ONE Raumklima sichtbar macht: messen, bewerten und direkt
+              verstehen, ob alles passt oder ob gelüftet werden sollte.
             </p>
             <div className="mt-6 grid gap-3">
-              {["Live-Demo des Geräts", "Ampelstatus auf einen Blick", "Direkte Handlungsempfehlung"].map(
-                (item) => (
-                  <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Sparkles className="h-4 w-4 text-primary" />
-                    <span>{item}</span>
-                  </div>
-                ),
-              )}
+              {[
+                "Live-Demo des Geräts",
+                "Ampelstatus auf einen Blick",
+                "Direkte Handlungsempfehlung",
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  <span>{item}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -179,7 +183,10 @@ function ProduktPage() {
       <Section title="Einsatzorte">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {useCases.map((place) => (
-            <div key={place} className="flex items-center gap-2 rounded-lg border border-border bg-card p-3">
+            <div
+              key={place}
+              className="flex items-center gap-2 rounded-lg border border-border bg-card p-3"
+            >
               <Home className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium text-foreground">{place}</span>
             </div>
@@ -189,14 +196,15 @@ function ProduktPage() {
 
       <Section title="Lieferumfang">
         <div className="grid gap-3 sm:grid-cols-2">
-          {["MPD ONE Gerät", "Kurzanleitung", "Lebenslange kostenlose App-Updates"].map(
-            (item) => (
-              <div key={item} className="flex items-start gap-2 rounded-lg border border-border bg-card p-3">
-                <Package className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                <span className="text-sm text-muted-foreground">{item}</span>
-              </div>
-            ),
-          )}
+          {["MPD ONE Gerät", "Kurzanleitung", "Lebenslange kostenlose App-Updates"].map((item) => (
+            <div
+              key={item}
+              className="flex items-start gap-2 rounded-lg border border-border bg-card p-3"
+            >
+              <Package className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              <span className="text-sm text-muted-foreground">{item}</span>
+            </div>
+          ))}
         </div>
       </Section>
 
@@ -225,12 +233,22 @@ function ProduktPage() {
         </ol>
       </Section>
 
-      <div className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm text-muted-foreground">
-        <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" />
-        <span>
-          Ziel des MVP: Ein bezahlbares Schimmelwarnsystem mit Luftfeuchtigkeitssensor,
-          LED-Ausgabe und verständlicher Handlungsempfehlung.
-        </span>
+      <div className="rounded-xl border border-primary/30 bg-primary/10 p-6 md:flex md:items-center md:justify-between md:gap-6">
+        <div>
+          <div className="flex items-center gap-2 font-semibold text-foreground">
+            <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" />
+            MPD ONE kennenlernen
+          </div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Interesse am Prototyp, einem Produkttest oder einer Zusammenarbeit?
+          </p>
+        </div>
+        <Button asChild className="mt-5 shrink-0 md:mt-0">
+          <a href="mailto:mpd.systemsandsolutions@gmail.com?subject=Interesse%20an%20MPD%20ONE">
+            <Mail className="h-4 w-4" />
+            Kontakt aufnehmen
+          </a>
+        </Button>
       </div>
     </PageShell>
   );

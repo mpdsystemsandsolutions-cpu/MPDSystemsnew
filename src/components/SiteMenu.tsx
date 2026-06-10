@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, Home, Building2, Target, Users, LogIn } from "lucide-react";
+import { Menu, Home, Building2, LayoutDashboard, Users, LogIn } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import mpdLogo from "@/assets/mpd-logo.png";
 import mpdDevice from "@/assets/mpd-one-device.png";
@@ -17,7 +17,8 @@ const sections: { label: string; items: Item[] }[] = [
   {
     label: "Start",
     items: [
-      { to: "/", label: "Dashboard", icon: Home },
+      { to: "/", label: "Startseite", icon: Home },
+      { to: "/dashboard", label: "Live-Dashboard", icon: LayoutDashboard },
       { to: "/auth", label: "Anmelden", icon: LogIn },
     ],
   },
@@ -36,8 +37,8 @@ const sections: { label: string; items: Item[] }[] = [
     ],
   },
   {
-    label: "Markt",
-    items: [{ to: "/markt", label: "MVP, USP & Personas", icon: Target }],
+    label: "Für Unternehmen",
+    items: [{ to: "/markt", label: "Lösungen für Unternehmen", icon: Building2 }],
   },
 ];
 
