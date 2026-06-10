@@ -44,7 +44,7 @@ const steps = [
   {
     icon: <Wind className="h-5 w-5" />,
     title: "Handeln",
-    text: "LED und Dashboard zeigen, wann Lüften oder Prüfen sinnvoll ist.",
+    text: "Die LED-Ampel zeigt, wann Lüften oder Prüfen sinnvoll ist.",
   },
 ];
 
@@ -53,7 +53,7 @@ const useCases = ["Bad", "Keller", "Schlafzimmer", "Ferienwohnung", "Büro", "Ab
 const technicalData = [
   { label: "Sensor", value: "DHT22" },
   { label: "Messwerte", value: "Temperatur, Luftfeuchtigkeit" },
-  { label: "Anzeige", value: "RGB-LED-Ampel und Web-Dashboard" },
+  { label: "Anzeige", value: "RGB-LED-Ampel" },
   { label: "Controller", value: "Arduino Nano ESP32" },
   { label: "Aktualisierung", value: "ca. alle 30 Sekunden" },
   { label: "Preis MVP", value: "54,49 €" },
@@ -72,7 +72,7 @@ function ProduktPage() {
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
             <Signal className="h-3.5 w-3.5" />
-            MVP mit Live-Dashboard
+            MVP mit direkter LED-Ampel
           </div>
           <h2 className="mt-4 text-2xl font-semibold tracking-tight md:text-3xl">
             Klare Warnung statt Zahlenraten
@@ -111,7 +111,7 @@ function ProduktPage() {
               direkt verstehen, ob alles passt oder ob gelüftet werden sollte.
             </p>
             <div className="mt-6 grid gap-3">
-              {["Live-Demo des Geräts", "Ampelstatus auf einen Blick", "Dashboard als Ergänzung"].map(
+              {["Live-Demo des Geräts", "Ampelstatus auf einen Blick", "Direkte Handlungsempfehlung"].map(
                 (item) => (
                   <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Sparkles className="h-4 w-4 text-primary" />
@@ -162,7 +162,7 @@ function ProduktPage() {
             <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               <li>Zeigt Messwerte, aber keine Bewertung</li>
               <li>Nutzer müssen Grenzwerte selbst kennen</li>
-              <li>Keine Historie und kein Dashboard</li>
+              <li>Keine direkte Handlungsempfehlung</li>
             </ul>
           </Card>
           <Card className="border-primary/40 bg-primary/10 p-5">
@@ -170,7 +170,7 @@ function ProduktPage() {
             <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               <li>Bewertet das Risiko automatisch</li>
               <li>Gibt klare Lüftungsempfehlungen</li>
-              <li>Speichert Verlauf und Warnhistorie im Dashboard</li>
+              <li>Zeigt den Status direkt per LED-Ampel</li>
             </ul>
           </Card>
         </div>
@@ -189,7 +189,7 @@ function ProduktPage() {
 
       <Section title="Lieferumfang">
         <div className="grid gap-3 sm:grid-cols-2">
-          {["MPD ONE Gerät", "Kurzanleitung", "Zugang zum Web-Dashboard", "Lebenslange kostenlose App-Updates"].map(
+          {["MPD ONE Gerät", "Kurzanleitung", "Lebenslange kostenlose App-Updates"].map(
             (item) => (
               <div key={item} className="flex items-start gap-2 rounded-lg border border-border bg-card p-3">
                 <Package className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
@@ -229,7 +229,7 @@ function ProduktPage() {
         <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" />
         <span>
           Ziel des MVP: Ein bezahlbares Schimmelwarnsystem mit Luftfeuchtigkeitssensor,
-          LED-Ausgabe und verständlichem Dashboard.
+          LED-Ausgabe und verständlicher Handlungsempfehlung.
         </span>
       </div>
     </PageShell>
