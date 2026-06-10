@@ -16,10 +16,30 @@ export const Route = createFileRoute("/unternehmen/team")({
 });
 
 const team = [
-  { name: "Tom Furtwängler", role: "Head of Product Developing", image: tomImg },
-  { name: "Roman Armbruster", role: "Head of Product Developing", image: romanImg },
-  { name: "Robin Grießbaum", role: "Head of Marketing & Sales", image: robinImg },
-  { name: "Matthias Kugel", role: "Hardware Lead", image: matthiasImg },
+  {
+    name: "Tom Furtwängler",
+    role: "Head of Product Developing",
+    employer: "hansgrohe",
+    image: tomImg,
+  },
+  {
+    name: "Roman Armbruster",
+    role: "Head of Product Developing",
+    employer: "hansgrohe",
+    image: romanImg,
+  },
+  {
+    name: "Robin Grießbaum",
+    role: "Head of Marketing & Sales",
+    employer: "supfina",
+    image: robinImg,
+  },
+  {
+    name: "Matthias Kugel",
+    role: "Hardware Lead",
+    employer: "KOCH Uhlmann Group",
+    image: matthiasImg,
+  },
 ];
 
 function TeamPage() {
@@ -28,20 +48,16 @@ function TeamPage() {
       <Section title="Unser Team">
         <ul className="grid gap-6 sm:grid-cols-2">
           {team.map((m) => (
-            <li
-              key={m.name}
-              className="overflow-hidden rounded-xl border border-border bg-card"
-            >
+            <li key={m.name} className="overflow-hidden rounded-xl border border-border bg-card">
               <div className="aspect-[4/5] w-full overflow-hidden bg-muted">
-                <img
-                  src={m.image}
-                  alt={m.name}
-                  className="h-full w-full object-cover"
-                />
+                <img src={m.image} alt={m.name} className="h-full w-full object-cover" />
               </div>
               <div className="p-4">
                 <div className="text-base font-semibold text-foreground">{m.name}</div>
                 <div className="mt-1 text-sm text-primary">{m.role}</div>
+                <div className="mt-3 border-t border-border pt-3 text-sm text-muted-foreground">
+                  Arbeitgeber: <span className="font-medium text-foreground">{m.employer}</span>
+                </div>
               </div>
             </li>
           ))}
