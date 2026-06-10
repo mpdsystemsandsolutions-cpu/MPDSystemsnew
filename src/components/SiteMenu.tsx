@@ -4,6 +4,7 @@ import { Menu, Home, Building2, Target, Users, LogIn } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import mpdLogo from "@/assets/mpd-logo.png";
 import mpdDevice from "@/assets/mpd-one-device.png";
+import mpdTwoDevice from "@/assets/mpd-two-rgb.png";
 
 type Item = {
   to: string;
@@ -24,7 +25,7 @@ const sections: { label: string; items: Item[] }[] = [
     label: "Produkt",
     items: [
       { to: "/produkt", label: "MPD ONE", image: mpdDevice },
-      { to: "/produkt-two", label: "MPD TWO", image: mpdDevice },
+      { to: "/produkt-two", label: "MPD TWO", image: mpdTwoDevice },
     ],
   },
   {
@@ -52,7 +53,11 @@ export function SiteMenu() {
         <SheetHeader>
           <SheetTitle className="flex items-center gap-3">
             <img src={mpdLogo} alt="MPD" className="h-10 w-auto" />
-            <span className="text-base">MPD Systems<br />and Solutions</span>
+            <span className="text-base">
+              MPD Systems
+              <br />
+              and Solutions
+            </span>
           </SheetTitle>
         </SheetHeader>
         <nav className="mt-6 space-y-6">
