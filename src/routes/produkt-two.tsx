@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Gauge, Lightbulb, Wifi } from "lucide-react";
+import { Gauge, Lightbulb, MonitorSmartphone, Palette, Wifi } from "lucide-react";
 import { PageShell, Section } from "@/components/PageShell";
 import { Card } from "@/components/ui/card";
+import mpdTwoRgb from "@/assets/mpd-two-rgb.png";
 import mpdTwoShowroom from "@/assets/mpd-two-showroom.png";
 
 export const Route = createFileRoute("/produkt-two")({
@@ -23,6 +24,42 @@ function ProduktTwoPage() {
       title="MPD TWO"
       subtitle="Die innovative Weiterentwicklung mit intelligentem Live-Dashboard."
     >
+      <Section title="Kompakte RGB-Version">
+        <Card className="overflow-hidden border-primary/30 bg-card">
+          <div className="grid lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div className="order-2 p-6 md:p-8 lg:order-1">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                <Palette className="h-3.5 w-3.5" />
+                RGB-Statusanzeige
+              </div>
+              <h2 className="mt-4 text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+                Klare Signale, digitale Einblicke
+              </h2>
+              <p className="mt-3 leading-relaxed text-muted-foreground">
+                Die kompakte Version des MPD TWO verbindet eine direkte RGB-Anzeige am Gerät mit dem
+                Live-Dashboard. Die Farbe zeigt den aktuellen Raumklima-Status sofort, während
+                detaillierte Messwerte und Entwicklungen digital abrufbar bleiben.
+              </p>
+              <div className="mt-6 grid gap-3">
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <Palette className="h-4 w-4 text-primary" />
+                  RGB-LED für einen schnellen Statusüberblick
+                </div>
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <MonitorSmartphone className="h-4 w-4 text-primary" />
+                  Live-Dashboard für Details und Entwicklungen
+                </div>
+              </div>
+            </div>
+            <img
+              src={mpdTwoRgb}
+              alt="Kompakte MPD TWO Version mit RGB-LED"
+              className="order-1 aspect-square h-full w-full object-cover lg:order-2"
+            />
+          </div>
+        </Card>
+      </Section>
+
       <Section title="Showroom">
         <Card className="overflow-hidden border-primary/30 bg-card">
           <div className="grid lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
@@ -34,15 +71,15 @@ function ProduktTwoPage() {
             <div className="p-6 md:p-8">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                 <Lightbulb className="h-3.5 w-3.5" />
-                Innovative Weiterentwicklung
+                Showroom-Version mit LED-Band
               </div>
               <h2 className="mt-4 text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
                 Raumklima live verstehen
               </h2>
               <p className="mt-3 leading-relaxed text-muted-foreground">
-                MPD TWO entwickelt das bewährte Konzept des MPD ONE konsequent weiter. Das
-                integrierte Live-Dashboard macht aktuelle Messwerte, Entwicklungen und
-                Handlungsempfehlungen jederzeit übersichtlich sichtbar.
+                Die Showroom-Version macht das Raumklima besonders anschaulich: Ein umlaufendes
+                LED-Band visualisiert den aktuellen Status weithin sichtbar. Ergänzend zeigt das
+                Live-Dashboard Messwerte, Entwicklungen und Handlungsempfehlungen.
               </p>
               <div className="mt-6 grid gap-3">
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
@@ -51,7 +88,7 @@ function ProduktTwoPage() {
                 </div>
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <Gauge className="h-4 w-4 text-primary" />
-                  Messwerte und Entwicklungen auf einen Blick
+                  LED-Band für eine weithin sichtbare Statusanzeige
                 </div>
               </div>
             </div>
