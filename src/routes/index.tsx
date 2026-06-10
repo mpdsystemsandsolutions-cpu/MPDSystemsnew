@@ -94,9 +94,6 @@ function LandingPage() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link to="/dashboard">Live-Dashboard ansehen</Link>
-              </Button>
             </div>
             <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
               {["Klare Ampelanzeige", "Aktualisierung alle 30 Sekunden", "Live-Auswertung"].map(
@@ -182,12 +179,17 @@ function LandingPage() {
               Die Weiterentwicklung verbindet die direkte RGB-Anzeige am Gerät mit einem
               Live-Dashboard für Messwerte, Warnhistorie und konkrete Empfehlungen.
             </p>
-            <Button asChild variant="outline" className="mt-6">
-              <Link to="/produkt-two">
-                MPD TWO ansehen
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button asChild variant="outline">
+                <Link to="/produkt-two">
+                  MPD TWO ansehen
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild>
+                <Link to="/dashboard">Live-Dashboard ansehen</Link>
+              </Button>
+            </div>
           </div>
           <img
             src={mpdTwoRgb}
